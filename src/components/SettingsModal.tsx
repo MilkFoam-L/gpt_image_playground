@@ -1,3 +1,5 @@
+import { IS_APOPHISCODE_EMBED } from '../lib/embed'
+import EmbedKeyPicker from './EmbedKeyPicker'
 import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { readText } from '@tauri-apps/plugin-clipboard-manager'
@@ -1540,9 +1542,13 @@ export default function SettingsModal() {
                     )}
                   </button>
                 </div>
-                <div data-selectable-text className="mt-1.5 text-xs text-gray-500 dark:text-gray-500">
-                  支持通过链接参数导入：<code className="bg-gray-100 dark:bg-white/[0.06] px-1 py-0.5 rounded">?apiKey=</code>
-                </div>
+                {IS_APOPHISCODE_EMBED ? (
+                  <EmbedKeyPicker onPick={(apiKey) => updateActiveProfile({ apiKey }, true)} />
+                ) : (
+                  <div data-selectable-text className="mt-1.5 text-xs text-gray-500 dark:text-gray-500">
+                    支持通过链接参数导入：<code className="bg-gray-100 dark:bg-white/[0.06] px-1 py-0.5 rounded">?apiKey=</code>
+                  </div>
+                )}
               </div>
 
               {/* 6. API 接口（Images/Responses） */}
