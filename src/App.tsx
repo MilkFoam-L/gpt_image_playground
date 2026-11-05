@@ -10,7 +10,7 @@ import { useDockerApiUrlMigrationNotice } from './hooks/useDockerApiUrlMigration
 import { useAppFonts } from './hooks/useAppFonts'
 import { useColorMode } from './hooks/useColorMode'
 import { useCloseConfirm } from './hooks/useCloseConfirm'
-import { promptImportLink, useImportLinks } from './hooks/useImportLinks'
+import { applyUrlSettings, promptImportLink, useImportLinks } from './hooks/useImportLinks'
 import { useAutoUpdateCheck } from './hooks/useReleaseUpdates'
 import { useSaveLocationPrompt } from './hooks/useSaveLocationPrompt'
 import { usePrivacyModeShortcut } from './hooks/usePrivacyMode'
@@ -227,7 +227,16 @@ export default function App() {
         // 不等待用户确认，客户端的剪贴板和 deep link 监听依赖它
         setStartupImportDone(true)
         // 预置配置写入后再提示，确认框按导入前的实际设置描述变化
-        if (importParams) promptImportLink(importParams, true)
+        if (importParams) {
+          // ApophisCode embed: the host console passes the user's own key, so apply it without a prompt.
+          if (importParams.get('embed') === 'apophiscode') {
+            void applyUrlSettings(useStore.getState().settings, importParams)
+              .then((settings) => useStore.getState().setSettings(settings))
+              .catch((error) => console.warn('Failed to apply embed settings:', error))
+          } else {
+            promptImportLink(importParams, true)
+          }
+        }
       })
   }, [])
 
