@@ -34,7 +34,8 @@ if (isTauri) {
 
 // 客户端不注册 Service Worker，避免缓存与客户端版本更新冲突
 if (!isTauri && 'serviceWorker' in navigator) {
-  if (import.meta.env.PROD) {
+  // ApophisCode embed builds set VITE_DISABLE_SW=true: the host serves the app, no offline shell.
+  if (import.meta.env.PROD && import.meta.env.VITE_DISABLE_SW !== 'true') {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch((error) => {
         console.error('Service worker registration failed:', error)
