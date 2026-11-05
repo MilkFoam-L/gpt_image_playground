@@ -1,5 +1,6 @@
 import { IS_APOPHISCODE_EMBED } from '../lib/embed'
 import EmbedKeyPicker from './EmbedKeyPicker'
+import EmbedModelPicker from './EmbedModelPicker'
 import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { readText } from '@tauri-apps/plugin-clipboard-manager'
@@ -164,6 +165,12 @@ function getImportedProfileFromMergedSettings(
   return nextSettings.profiles.find((profile) => !previousProfileIds.has(profile.id)) ?? nextSettings.profiles[0]
 }
 
+
+/** Locked preset profiles accept only the API key, plus the model list in the ApophisCode embed. */
+function isLockedProfilePatchAllowed(patch: Partial<ApiProfile>) {
+  const keys = Object.keys(patch)
+  return keys.length > 0 && keys.every((key) => key === 'apiKey' || (IS_APOPHISCODE_EMBED && key === 'model'))
+}
 
 export default function SettingsModal() {
   const showSettings = useStore((s) => s.showSettings)
@@ -533,14 +540,14 @@ export default function SettingsModal() {
     })
 
   const updateActiveProfile = (patch: Partial<ApiProfile>, commit = false) => {
-    if (activeProfileLocked && (Object.keys(patch).length !== 1 || patch.apiKey === undefined)) return
+    if (activeProfileLocked && !isLockedProfilePatchAllowed(patch)) return
     const nextDraft = getDraftWithActiveProfilePatch(patch)
     setDraft(nextDraft)
     if (commit) commitSettings(nextDraft)
   }
 
   const commitActiveProfilePatch = (patch: Partial<ApiProfile>) => {
-    if (activeProfileLocked && (Object.keys(patch).length !== 1 || patch.apiKey === undefined)) return
+    if (activeProfileLocked && !isLockedProfilePatchAllowed(patch)) return
     const nextDraft = getDraftWithActiveProfilePatch(patch)
     commitSettings(nextDraft)
   }
@@ -1543,7 +1550,7 @@ export default function SettingsModal() {
                   </button>
                 </div>
                 {IS_APOPHISCODE_EMBED ? (
-                  <EmbedKeyPicker onPick={(apiKey) => updateActiveProfile({ apiKey }, true)} />
+                  <EmbedKeyPicker onPick={(apiKey, models) => updateActiveProfile(models.length ? { apiKey, model: models.join(',') } : { apiKey }, true)} />
                 ) : (
                   <div data-selectable-text className="mt-1.5 text-xs text-gray-500 dark:text-gray-500">
                     支持通过链接参数导入：<code className="bg-gray-100 dark:bg-white/[0.06] px-1 py-0.5 rounded">?apiKey=</code>
@@ -1575,6 +1582,9 @@ export default function SettingsModal() {
               )}
 
               {/* 7. 模型 ID（紧跟接口选择） */}
+              {IS_APOPHISCODE_EMBED ? (
+                <EmbedModelPicker value={activeProfile.model} onChange={(model) => updateActiveProfile({ model }, true)} />
+              ) : (
               <label className="block">
                 <span className="mb-1.5 block text-sm text-gray-600 dark:text-gray-300">
                   {isResponsesProfile ? '文本模型 ID' : '模型 ID'}
@@ -1610,6 +1620,7 @@ export default function SettingsModal() {
                   )}
                 </div>
               </label>
+              )}
 
               {isResponsesProfile && (
                 <div className="block">

@@ -1,29 +1,8 @@
 import { useEffect, useState } from 'react'
-
-interface HostKeyOption {
-  id: number
-  name: string
-  group: string
-  eligible: boolean
-}
-
-interface HostKeyBridge {
-  list: () => Promise<HostKeyOption[]>
-  reveal: (id: number) => Promise<string>
-}
-
-/** Same-origin bridge exposed by the ApophisCode console page that hosts this iframe. */
-function getHostBridge(): HostKeyBridge | null {
-  try {
-    const host = window.parent as Window & { apophiscodeKeyBridge?: HostKeyBridge }
-    return host !== window && host.apophiscodeKeyBridge ? host.apophiscodeKeyBridge : null
-  } catch {
-    return null
-  }
-}
+import { HOST_KEY_CHANGED_EVENT, getHostBridge, type HostKeyOption } from '../lib/embedBridge'
 
 /** Lets the user fill the API Key from keys they already created on the host site. */
-export default function EmbedKeyPicker({ onPick }: { onPick: (apiKey: string) => void }) {
+export default function EmbedKeyPicker({ onPick }: { onPick: (apiKey: string, models: string[]) => void }) {
   const [keys, setKeys] = useState<HostKeyOption[] | null>(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -45,7 +24,10 @@ export default function EmbedKeyPicker({ onPick }: { onPick: (apiKey: string) =>
     setLoading(true)
     setError('')
     try {
-      onPick(await bridge.reveal(Number(value)))
+      const id = Number(value)
+      const apiKey = await bridge.reveal(id)
+      onPick(apiKey, keys?.find((key) => key.id === id)?.models ?? [])
+      window.dispatchEvent(new Event(HOST_KEY_CHANGED_EVENT))
     } catch {
       setError('获取密钥失败，请稍后重试')
     } finally {

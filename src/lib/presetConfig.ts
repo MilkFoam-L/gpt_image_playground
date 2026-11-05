@@ -1,3 +1,4 @@
+import { IS_APOPHISCODE_EMBED } from './embed'
 import type { ApiProfile, AppSettings, CustomProviderDefinition, PresetAgentConfig, PresetConfig } from '../types'
 import { getPresetAgentSettings, normalizeSettings } from './apiProfiles'
 import { readRuntimeEnv } from './runtimeEnv'
@@ -113,6 +114,8 @@ export function enforcePresetConfigPolicy(
     return {
       ...(paramsLocked ? preset : profile),
       apiKey: profile.apiKey,
+      // ApophisCode embed: the model list follows the chosen site key (EmbedModelPicker).
+      ...(IS_APOPHISCODE_EMBED && profile.model ? { model: profile.model } : {}),
       selectedModel: profile.selectedModel,
       provider: paramsLocked || presetConfigOnly ? preset.provider : profile.provider,
       isDefault: profile.id === defaultPresetProfileId ? true : undefined,

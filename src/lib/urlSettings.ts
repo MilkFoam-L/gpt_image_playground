@@ -11,6 +11,7 @@ import {
   normalizeReasoningEffort,
   normalizeStreamPartialImages,
 } from './apiProfiles'
+import { IS_APOPHISCODE_EMBED } from './embed'
 import { isPresetConfigOnlyEnabled, isPresetConfigParamsLocked, isPresetProfile } from './presetConfig'
 
 const URL_SETTING_KEYS = ['settings', 'profileId', 'apiUrl', 'apiKey', 'codexCli', 'apiMode', 'model', 'imageGenerationModel', 'profileName', 'reasoningEffort', 'streamImages', 'streamPartialImages', 'transparentBackgroundMethod']
@@ -200,6 +201,8 @@ function buildPresetConfigOnlySettingsFromUrlParams(currentSettings: Partial<App
   const profileNameParam = searchParams.get('profileName')
   const transparentBackgroundMethodParam = searchParams.get('transparentBackgroundMethod')
   if (apiKeyParam !== null) patch.apiKey = apiKeyParam.trim()
+  // ApophisCode embed: the host also hands over the models the chosen key can call.
+  if (apiKeyOnly && IS_APOPHISCODE_EMBED && modelParam?.trim()) patch.model = modelParam.trim()
   if (!apiKeyOnly) {
     if (profileNameParam?.trim()) patch.name = profileNameParam.trim()
     if (apiUrlParam !== null) patch.baseUrl = normalizeBaseUrl(apiUrlParam.trim())
