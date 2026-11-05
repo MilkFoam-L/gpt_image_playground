@@ -1,9 +1,32 @@
-import { useLayoutEffect, useSyncExternalStore } from 'react'
+import { useLayoutEffect, useState, useSyncExternalStore } from 'react'
 import { COLOR_MODE_KEY, resolveDarkMode } from '../lib/colorMode'
 import { useStore } from '../store'
+import type { ColorMode } from '../types'
+
+// When embedded in the ApophisCode (new-api) console, follow the host theme.
+const HOST_THEME_KEY = 'newapi:theme:v1:mode'
+
+function readHostMode(): ColorMode | null {
+  try {
+    const value = localStorage.getItem(HOST_THEME_KEY)
+    return value === 'light' || value === 'dark' || value === 'system' ? value : null
+  } catch {
+    return null
+  }
+}
 
 export function useColorMode() {
-  const colorMode = useStore((s) => s.settings.colorMode)
+  const ownMode = useStore((s) => s.settings.colorMode)
+  const [hostMode, setHostMode] = useState<ColorMode | null>(readHostMode)
+  const colorMode = hostMode ?? ownMode
+
+  useLayoutEffect(() => {
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === HOST_THEME_KEY) setHostMode(readHostMode())
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
 
   useLayoutEffect(() => {
     try {

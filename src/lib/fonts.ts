@@ -16,11 +16,12 @@ const BUILTIN_FONT_SOURCE: BuiltinFontSource = readRuntimeEnv(import.meta.env.VI
 const FONT_SLOTS = {
   ui: {
     family: 'HarmonyOS Sans SC',
-    fallback: "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+    fallback: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif",
     cssVar: '--font-ui-sans',
     cdnCss: 'https://cdn.jsdelivr.net/npm/@lobehub/webfont-harmony-sans-sc@1.0.0/css/index.css',
     deployValue: readRuntimeEnv(import.meta.env.VITE_DEFAULT_UI_FONT),
-    loadLocal: () => import('../../fonts/harmonyos-sans-sc.css'),
+    // ApophisCode embed: system fonts only, no bundled font files.
+    loadLocal: () => Promise.resolve(),
   },
   mono: {
     family: 'Maple Mono NF CN',
@@ -28,7 +29,7 @@ const FONT_SLOTS = {
     cssVar: '--font-mono',
     cdnCss: 'https://fontsapi.zeoseven.com/442/main/result.css',
     deployValue: readRuntimeEnv(import.meta.env.VITE_DEFAULT_MONO_FONT),
-    loadLocal: () => import('../../fonts/maple-mono-nf-cn.css'),
+    loadLocal: () => Promise.resolve(),
   },
 }
 

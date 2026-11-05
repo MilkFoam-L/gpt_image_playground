@@ -4,7 +4,7 @@
 (() => {
   let mode = 'system'
   try {
-    mode = localStorage.getItem('color-mode') || 'system'
+    mode = localStorage.getItem('newapi:theme:v1:mode') || localStorage.getItem('color-mode') || 'system'
   } catch {}
   const dark = mode === 'dark' || (mode !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
   document.documentElement.classList.toggle('dark', dark)

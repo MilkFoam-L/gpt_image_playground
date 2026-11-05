@@ -31,8 +31,6 @@ import MaskEditorModal from './components/MaskEditorModal'
 import SketchBoardModal from './components/SketchBoardModal'
 import TitleBar from './components/TitleBar'
 import ImageContextMenu from './components/ImageContextMenu'
-import SupportPromptModal from './components/SupportPromptModal'
-import AnnouncementModal from './components/AnnouncementModal'
 import { preloadMarkdownRenderer } from './components/MarkdownRenderer'
 import { SKILL_LABEL } from './components/settings/SkillSettingsSection'
 import { FavoriteCollectionPickerModal, FavoriteCollectionsView, ManageCollectionsModal } from './components/FavoriteCollections'
@@ -267,9 +265,6 @@ export default function App() {
       <UpdateModal />
       <DataProgressDialog />
       <ConfirmDialog />
-      <SupportPromptModal />
-      {/* 等启动时的任务加载和预置配置导入完成，再按图片数量等条件筛选公告 */}
-      <AnnouncementModal ready={startupImportDone} />
       <FavoriteCollectionPickerModal />
       <ManageCollectionsModal />
       <Toast />

@@ -4,13 +4,24 @@
 
 :root {
   --background: 0 0% 100%;
-  --foreground: 240 10% 10%;
+  --foreground: 0 0% 4%;
   --muted: 240 5% 96%;
   --muted-foreground: 240 4% 46%;
   --border: 240 6% 90%;
   --input: 240 6% 90%;
-  --primary: 221 83% 53%;
-  --primary-foreground: 0 0% 100%;
+  --primary: 0 0% 9%;
+  --primary-foreground: 0 0% 98%;
+  --brand-50: 250 250 250;
+  --brand-100: 244 244 245;
+  --brand-200: 228 228 231;
+  --brand-300: 212 212 216;
+  --brand-400: 113 113 122;
+  --brand-500: 24 24 27;
+  --brand-600: 39 39 42;
+  --brand-700: 24 24 27;
+  --brand-800: 24 24 27;
+  --brand-900: 9 9 11;
+  --brand-950: 9 9 11;
   --sidebar: 240 5% 96%;
   --sidebar-foreground: 240 10% 10%;
   /* 字体由 src/lib/fonts.ts 按设置覆盖并按需加载字体文件，这里是脚本运行前的初始值 */
@@ -90,14 +101,25 @@ body.drag-selecting * {
 }
 
 :root.dark {
-  --background: 240 10% 4%;
+  --background: 0 0% 4%;
   --foreground: 0 0% 98%;
   --muted: 240 4% 16%;
   --muted-foreground: 240 5% 65%;
   --border: 240 4% 22%;
   --input: 240 4% 22%;
-  --primary: 217 91% 60%;
-  --primary-foreground: 0 0% 100%;
+  --primary: 0 0% 90%;
+  --primary-foreground: 0 0% 9%;
+  --brand-50: 39 39 42;
+  --brand-100: 39 39 42;
+  --brand-200: 63 63 70;
+  --brand-300: 212 212 216;
+  --brand-400: 212 212 216;
+  --brand-500: 82 82 91;
+  --brand-600: 63 63 70;
+  --brand-700: 228 228 231;
+  --brand-800: 244 244 245;
+  --brand-900: 250 250 250;
+  --brand-950: 250 250 250;
   --sidebar: 240 5% 12%;
   --sidebar-foreground: 0 0% 98%;
 }
