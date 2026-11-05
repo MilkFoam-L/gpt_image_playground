@@ -1,3 +1,4 @@
+import { IS_APOPHISCODE_EMBED } from '../lib/embed'
 import { useEffect, useRef, useState } from 'react'
 import { useStore } from '../store'
 import { setUpdateModalOpen, useReleaseUpdates } from '../hooks/useReleaseUpdates'
@@ -173,12 +174,15 @@ export default function Header() {
     }
   }
 
+  // Embed: help and settings live in the search row, so there is no top bar.
+  if (IS_APOPHISCODE_EMBED) return null
+
   return (
     <>
       <header data-no-drag-select className={`safe-area-top pr-[var(--page-scrollbar-width)] fixed top-0 left-0 right-0 z-40 bg-white/80 dark:bg-gray-950/80 backdrop-blur border-b border-gray-200 dark:border-white/[0.08] transition-transform duration-300 ease-in-out ${appMode === 'agent' && !agentMobileHeaderVisible ? '-translate-y-full sm:translate-y-0' : 'translate-y-0'}`}>
         <div className="safe-area-x safe-header-inner max-w-7xl mx-auto flex items-center justify-between relative">
           <div className="flex-1 min-w-0 pr-2 flex items-center gap-2">
-            <h1 className="inline-flex min-w-0 items-start relative mr-2">
+            {!IS_APOPHISCODE_EMBED && <h1 className="inline-flex min-w-0 items-start relative mr-2">
               {showFavoriteCollectionTitle ? (
                 <>
                   <span className="min-w-0 truncate text-[17px] font-bold tracking-tight text-gray-800 dark:text-gray-100 sm:hidden" title={favoriteCollectionTitle}>{favoriteCollectionTitle}</span>
@@ -212,7 +216,7 @@ export default function Header() {
                   NEW
                 </button>
               )}
-            </h1>
+            </h1>}
             {appMode === 'agent' && <div className="hidden sm:flex items-center gap-1 relative">
               <button
                 ref={historyButtonRef}
@@ -281,7 +285,7 @@ export default function Header() {
           </div>
           <div className="flex items-center gap-1 shrink-0">
             {/* 客户端本身就是安装版，不显示 PWA 安装入口 */}
-            {!isTauri && !isPwaInstalled && (
+            {!IS_APOPHISCODE_EMBED && !isTauri && !isPwaInstalled && (
               <div
                 className="relative"
                 {...installTooltip.handlers}
@@ -302,7 +306,7 @@ export default function Header() {
               </div>
             )}
             {/* 窄屏时按钮区空间不足，同样不显示 */}
-            {SHOW_CLIENT_DOWNLOAD && (
+            {!IS_APOPHISCODE_EMBED && SHOW_CLIENT_DOWNLOAD && (
               <div
                 className="relative hidden sm:block"
                 {...clientTooltip.handlers}

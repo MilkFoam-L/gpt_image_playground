@@ -1,3 +1,5 @@
+import { IS_APOPHISCODE_EMBED } from '../lib/embed'
+import { EmbedToolbar } from './EmbedChrome'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { clearFailedTasks, useStore, taskMatchesFilterStatus, taskMatchesSearchQuery } from '../store'
 import { ALL_FAVORITES_COLLECTION_ID, getTaskFavoriteCollectionIds } from '../lib/favoriteState'
@@ -132,7 +134,7 @@ export default function SearchBar() {
   }
 
   return (
-    <div ref={rootRef} data-no-drag-select className="mt-6 mb-4 flex gap-3">
+    <div ref={rootRef} data-no-drag-select className={`mb-4 flex gap-3 ${IS_APOPHISCODE_EMBED ? 'mt-4 items-center' : 'mt-6'}`}>
       <div className="flex gap-2 flex-shrink-0 z-20">
         {!privacyMode && (
           <SearchActionButton
@@ -209,6 +211,7 @@ export default function SearchBar() {
           className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-transparent bg-black/[0.04] dark:bg-white/[0.06] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition"
         />
       </div>
+      {IS_APOPHISCODE_EMBED && <EmbedToolbar />}
     </div>
   )
 }

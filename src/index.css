@@ -549,3 +549,8 @@ input[type="number"] {
   isolation: isolate;
   -webkit-mask-image: -webkit-radial-gradient(white, black);
 }
+
+/* ApophisCode embed: the gallery has no top bar (see Header.tsx). */
+:root[data-embed-no-header] {
+  --header-height: 0px;
+}

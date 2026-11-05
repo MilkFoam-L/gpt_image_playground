@@ -30,8 +30,14 @@ export interface DefaultApiUrlPatch {
   transparentBackgroundMethod?: ApiProfile['transparentBackgroundMethod']
 }
 
+// ApophisCode embed: a preset such as "/v1?model=..." points at the hosting origin.
+function resolveHostRelativeUrl(url: string) {
+  if (!url.startsWith('/') || typeof window === 'undefined') return url
+  return `${window.location.origin}${url}`
+}
+
 export function parseDefaultApiUrl(rawUrl: string): DefaultApiUrlPatch {
-  const url = rawUrl.trim()
+  const url = resolveHostRelativeUrl(rawUrl.trim())
   if (!url) return { baseUrl: '' }
 
   try {

@@ -3,6 +3,8 @@ import { createPortal } from 'react-dom'
 import { deleteFavoriteCollection, useStore, submitTask, submitAgentMessage, stopAgentResponse, stopBatchPrompts, addImageFromFile, removeMultipleTasks, taskMatchesFilterStatus, taskMatchesSearchQuery } from '../store'
 import { DEFAULT_PARAMS, MAX_INPUT_IMAGES, type TaskRecord } from '../types'
 import { getActiveAgentRounds } from '../lib/agentConversationState'
+import { IS_APOPHISCODE_EMBED } from '../lib/embed'
+import { EmbedInputFooter } from './EmbedChrome'
 import { getActiveApiProfile, getAgentImageApiProfile, normalizeSettings, resolveApiProfileModel, splitModelList } from '../lib/apiProfiles'
 import { isVectorOrAnimatedFormat, supportsExtendedQuality, supportsGptImage26Params } from '../lib/imageModels'
 import { ensureImageCached, getCachedImage } from '../lib/imageCache'
@@ -2052,6 +2054,8 @@ export default function InputBar() {
               </div>
             </div>
           </div>
+
+          {IS_APOPHISCODE_EMBED && <EmbedInputFooter missingKey={!settingsActiveProfile.apiKey?.trim()} />}
 
           <input
             ref={fileInputRef}

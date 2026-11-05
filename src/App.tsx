@@ -1,3 +1,4 @@
+import { IS_APOPHISCODE_EMBED } from './lib/embed'
 import { useEffect, useState } from 'react'
 import { invoke } from '@tauri-apps/api/core'
 import type { SkillInfo } from './types'
@@ -142,6 +143,14 @@ export default function App() {
         showStartupNotices(sections)
       })
   }, [])
+
+  useEffect(() => {
+    // Embed is gallery-only (see EmbedChrome.tsx); a persisted Agent mode falls back.
+    if (IS_APOPHISCODE_EMBED && appMode === 'agent') useStore.getState().setAppMode('gallery')
+    const root = document.documentElement
+    if (IS_APOPHISCODE_EMBED) root.setAttribute('data-embed-no-header', '')
+    else root.removeAttribute('data-embed-no-header')
+  }, [appMode])
 
   useEffect(() => {
     if (isTauri) setTauriLogEnabled(writeLogFile)
