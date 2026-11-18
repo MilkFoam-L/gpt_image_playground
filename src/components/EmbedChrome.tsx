@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { useStore } from '../store'
 import { UPSTREAM_REPO_URL } from '../lib/embed'
+import { getActiveApiProfile } from '../lib/apiProfiles'
+import { HOST_KEY_CHANGED_EVENT, getHostBridge } from '../lib/embedBridge'
+import { prepareSettingsForCommit } from '../lib/settingsActions'
 import HelpModal from './HelpModal'
 import { HelpCircleIcon, SettingsIcon } from './icons'
 
@@ -48,10 +51,56 @@ export function EmbedToolbar() {
 }
 
 /** Key hint and open-source notice under the prompt box. */
+/** Puts a host key into the active (locked) profile, like the settings key picker. */
+function applyHostKey(apiKey: string, models: string[]) {
+  const { settings, setSettings } = useStore.getState()
+  const active = getActiveApiProfile(settings)
+  const patch = models.length ? { apiKey, model: models.join(',') } : { apiKey }
+  setSettings(prepareSettingsForCommit({
+    ...settings,
+    profiles: settings.profiles.map((profile) => profile.id === active.id ? { ...profile, ...patch } : profile),
+  }))
+  window.dispatchEvent(new Event(HOST_KEY_CHANGED_EVENT))
+}
+
 export function EmbedInputFooter({ missingKey }: { missingKey: boolean }) {
   const setShowSettings = useStore((s) => s.setShowSettings)
+  const [creating, setCreating] = useState(false)
+  const [error, setError] = useState('')
+  const bridge = getHostBridge()
+
+  const createKey = async () => {
+    if (!bridge?.create) return
+    setCreating(true)
+    setError('')
+    try {
+      const { apiKey, models } = await bridge.create()
+      applyHostKey(apiKey, models)
+    } catch (e) {
+      const message = e instanceof Error ? e.message : ''
+      // The host reports a declined usage notice with this exact message.
+      if (message !== 'Key creation cancelled') setError(message || '创建密钥失败，请稍后重试')
+    } finally {
+      setCreating(false)
+    }
+  }
+
   return (
     <div className="mt-2 space-y-1 px-1 text-center text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
+      {missingKey && bridge?.create && (
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <button
+            type="button"
+            disabled={creating}
+            onClick={() => void createKey()}
+            className="rounded-full bg-gray-900 px-3 py-1 text-xs font-medium text-white shadow-sm transition hover:bg-gray-700 disabled:opacity-60 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-300"
+          >
+            {creating ? '正在创建…' : '一键创建生图密钥'}
+          </button>
+          <span>系统自动创建并选中，创建后可直接生图</span>
+        </div>
+      )}
+      {error && <p className="text-red-500">{error}</p>}
       {missingKey && (
         <p>
           未找到属于支持该模型分组的 API 密钥，请在

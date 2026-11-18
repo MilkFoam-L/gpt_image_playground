@@ -10,6 +10,8 @@ export interface HostKeyOption {
 export interface HostKeyBridge {
   list: () => Promise<HostKeyOption[]>
   reveal: (id: number) => Promise<string>
+  /** Creates (or reuses) a key in the image group; older hosts lack it. */
+  create?: () => Promise<{ id: number; apiKey: string; models: string[] }>
 }
 
 /** Written by the host (and by the key picker) when a site key is chosen. */
